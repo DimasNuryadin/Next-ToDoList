@@ -1,22 +1,13 @@
 "use client"
 
-import { useState } from "react";
 import Link from "next/link";
 import { useDispatch, useSelector } from "react-redux";
-import { addTodo } from "@/store/todoSlice";
 import { RootState } from "@/store/store";
+import { removeTodo, toggleTodo } from "@/store/todoSlice";
 
 export default function Home() {
   const todos = useSelector((state: RootState) => state.todos.list);
   const dispatch = useDispatch();
-  const [input, setInput] = useState('');
-
-  const handleAdd = () => {
-    if (input.trim()) {
-      dispatch(addTodo(input));
-      setInput('');
-    }
-  };
 
   return (
     <div className="min-h-screen bg-gray-100 flex items-center justify-center">
@@ -34,27 +25,36 @@ export default function Home() {
           {todos.length === 0 && (
             <li className="text-gray-400 text-center py-4">Belum ada tugas</li>
           )}
-          {todos.map((todo, idx) => (
+          {todos.map((todo) => (
             <li
-              key={idx}
+              key={todo.id}
               className="flex items-center justify-between bg-gray-50 rounded px-3 py-2 mb-2"
             >
-              {/* <span>{todo}</span>
+              <span
+                onClick={() => dispatch(toggleTodo(todo.id))}
+                style={{
+                  textDecoration: todo.completed ? 'line-through' : 'none',
+                  cursor: 'pointer',
+                }}
+              >
+                {todo.text}
+              </span>
               <div>
-                <button
+                <Link
+                  href={`/edit/${todo.id}`}
                   className="text-green-500 hover:text-green-700 mr-4"
                   aria-label="Edit"
                 >
                   Edit
-                </button>
+                </Link>
                 <button
                   className="text-red-500 hover:text-red-700"
-                  onClick={() => removeTodo(idx)}
+                  onClick={() => dispatch(removeTodo(todo.id))}
                   aria-label="Hapus"
                 >
                   Hapus
                 </button>
-              </div> */}
+              </div>
             </li>
           ))}
         </ul>
